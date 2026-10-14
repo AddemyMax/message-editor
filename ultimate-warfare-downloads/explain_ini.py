@@ -45,6 +45,37 @@ def _production_layout(game_dir: Path, project: Path) -> list[dict]:
     return result
 
 
+def _control_bar_layout(game_dir: Path) -> dict:
+    """Inspect window names/geometry only; this is not a WND rewrite parser."""
+    source = GameSource(game_dir)
+    candidates = [entry for key, entry in sorted(source.entries.items())
+                  if key.endswith("\\controlbar.wnd")]
+    files = []
+    for entry in candidates:
+        data = source.read(entry.name)
+        windows = []
+        # Each native window begins with WINDOWTYPE then SCREENRECT; NAME is
+        # a subsequent field. Do not copy callbacks, art, text or whole blocks.
+        starts = list(re.finditer(rb"\bWINDOWTYPE\s*=\s*([A-Za-z0-9_]+)\s*;", data))
+        for index, start in enumerate(starts):
+            stop = starts[index + 1].start() if index + 1 < len(starts) else len(data)
+            segment = data[start.end():stop]
+            name = re.search(rb'\bNAME\s*=\s*"?([A-Za-z0-9_.:\\/-]+)"?\s*;', segment)
+            rect = re.search(rb"\bSCREENRECT\s*=\s*([^;]{1,256});", segment)
+            if name is None:
+                continue
+            window = {"name": name[1].decode("ascii"), "window_type": start[1].decode("ascii")}
+            if rect and re.fullmatch(rb"[A-Za-z0-9_:.,=+ \t\r\n-]+", rect[1]):
+                window["screen_rect"] = rect[1].decode("ascii").strip()
+            windows.append(window)
+        files.append({"source_virtual_path": entry.name, "archive_name": entry.archive_path.name,
+                      "size_bytes": len(data), "window_metadata": windows,
+                      "command_window_names": [window["name"] for window in windows
+                                               if re.search(r"ButtonCommand\d+$", window["name"])]})
+    return {"files": files, "status": "inspected" if files else "ControlBar.wnd not found",
+            "limitation": "Lexical window metadata only; native visibility and placement are not verified."}
+
+
 def _structure_context(raw_lines: list[bytes], line_number: int) -> dict:
     """List nearby keys/module types without copying scalar field values.
 
@@ -88,11 +119,12 @@ def _structure_context(raw_lines: list[bytes], line_number: int) -> dict:
 def explain(game_dir: Path, *, project: Path = PROJECT) -> dict:
     report = diagnose(game_dir, project=project)
     report["detail_kind"] = "one_clipped_ini_error_line"
-    report["detail_tool_version"] = "1.2"
+    report["detail_tool_version"] = "1.3"
     if any("no free production slot" in check.get("message", "").lower()
            for check in report.get("checks", [])):
         report["detail_kind"] = "factory_command_identifiers"
         report["production_layout"] = _production_layout(game_dir, project)
+        report["control_bar_layout"] = _control_bar_layout(game_dir)
         report["line_detail_status"] = "Factory slots inspected; no source lines included."
         return report
     details = report.get("ini_error", {})
