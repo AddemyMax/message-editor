@@ -15,7 +15,34 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from uwmod.diagnostics import diagnose, _ini_details
 from uwmod.ini import IniError, parse_ini
-from uwmod.project import PROJECT, MONOLITHIC, GameSource, _atomic_write, _inside
+from uwmod.project import PROJECT, MONOLITHIC, GameSource, _atomic_write, _inside, _scalar
+
+
+def _production_layout(game_dir: Path, project: Path) -> list[dict]:
+    """Expose factory/menu identifiers, never whole configuration files."""
+    source = GameSource(game_dir)
+    catalog = json.loads((project / "content/catalog.json").read_text(encoding="utf-8"))
+    menu_path = "Data\\INI\\CommandSet.ini"
+    menus = parse_ini(source.read(menu_path))
+    result = []
+    for relative in catalog["units"]:
+        manifest = (project / "content" / relative).resolve()
+        if not _inside(manifest, project / "content"):
+            raise ValueError("Unit manifest escapes content directory")
+        spec = json.loads(manifest.read_text(encoding="utf-8"))
+        factory, factory_path = source.find_object(spec["production_object"])
+        factory_block, = parse_ini(factory).blocks
+        name = _scalar(factory_block, "CommandSet")
+        block = menus.find_block("CommandSet", name)
+        slots = [{"slot": int(field.key), "command_button": field.value}
+                 for field in block.fields if field.key.isascii() and field.key.isdecimal()]
+        result.append({"factory_object": spec["production_object"],
+                       "factory_source_path": factory_path,
+                       "command_set": name, "command_set_archive": source.entries[menu_path.lower()].archive_path.name,
+                       "slots": slots,
+                       "free_production_slots": [slot for slot in range(1, 13)
+                                                 if slot not in {item["slot"] for item in slots}]})
+    return result
 
 
 def _structure_context(raw_lines: list[bytes], line_number: int) -> dict:
@@ -61,7 +88,13 @@ def _structure_context(raw_lines: list[bytes], line_number: int) -> dict:
 def explain(game_dir: Path, *, project: Path = PROJECT) -> dict:
     report = diagnose(game_dir, project=project)
     report["detail_kind"] = "one_clipped_ini_error_line"
-    report["detail_tool_version"] = "1.1"
+    report["detail_tool_version"] = "1.2"
+    if any("no free production slot" in check.get("message", "").lower()
+           for check in report.get("checks", [])):
+        report["detail_kind"] = "factory_command_identifiers"
+        report["production_layout"] = _production_layout(game_dir, project)
+        report["line_detail_status"] = "Factory slots inspected; no source lines included."
+        return report
     details = report.get("ini_error", {})
     line_number = details.get("line")
     if not isinstance(line_number, int) or line_number < 1:
