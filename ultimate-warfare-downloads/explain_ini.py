@@ -45,7 +45,38 @@ def _production_layout(game_dir: Path, project: Path) -> list[dict]:
     return result
 
 
-def _control_bar_layout(game_dir: Path) -> dict:
+def _window_structure(data: bytes) -> list[dict]:
+    """Lexical trace without guessing a stack or copying window field values."""
+    records = []
+    for number, raw in enumerate(data.splitlines(), start=1):
+        match = re.match(rb"[ \t]*([A-Za-z_]+)(.*)", raw)
+        if match is None:
+            continue
+        key = match[1].decode("ascii")
+        tail = match[2].strip()
+        if key in ("WINDOW", "CHILD", "END", "ENDALLCHILDREN"):
+            record = {"line": number, "keyword": key,
+                      "bare_line": not tail, "semicolon": tail.startswith(b";"),
+                      "slash_comment": tail.startswith(b"//")}
+            # These bytes are only the keyword; no comments or scalar values.
+            record["keyword_hex"] = match[1].hex()
+            records.append(record)
+        elif key == "WINDOWTYPE":
+            value = re.fullmatch(rb"=\s*([A-Za-z0-9_]+)\s*;.*", tail)
+            record = {"line": number, "keyword": key}
+            if value:
+                record["window_type"] = value[1].decode("ascii")
+            records.append(record)
+        elif key == "NAME":
+            value = re.fullmatch(rb'=\s*"([A-Za-z0-9_.:\\/-]*)"\s*;.*', tail)
+            record = {"line": number, "keyword": key}
+            if value:
+                record["identifier"] = value[1].decode("ascii")
+            records.append(record)
+    return records
+
+
+def _control_bar_layout(game_dir: Path, *, structure: bool = False) -> dict:
     """Inspect window names/geometry only; this is not a WND rewrite parser."""
     source = GameSource(game_dir)
     candidates = [entry for key, entry in sorted(source.entries.items())
@@ -72,6 +103,11 @@ def _control_bar_layout(game_dir: Path) -> dict:
                       "size_bytes": len(data), "window_metadata": windows,
                       "command_window_names": [window["name"] for window in windows
                                                if re.search(r"ButtonCommand\d+$", window["name"])]})
+        if structure:
+            records = _window_structure(data)
+            files[-1]["structural_records"] = records[:3000]
+            files[-1]["structural_record_count"] = len(records)
+            files[-1]["structural_records_truncated"] = len(records) > 3000
     return {"files": files, "status": "inspected" if files else "ControlBar.wnd not found",
             "limitation": "Lexical window metadata only; native visibility and placement are not verified."}
 
@@ -116,10 +152,15 @@ def _structure_context(raw_lines: list[bytes], line_number: int) -> dict:
             "previous_keywords": records[-60:], "trace_kind": "lexical_metadata_not_repaired_structure"}
 
 
-def explain(game_dir: Path, *, project: Path = PROJECT) -> dict:
+def explain(game_dir: Path, *, project: Path = PROJECT, window_structure: bool = False) -> dict:
     report = diagnose(game_dir, project=project)
     report["detail_kind"] = "one_clipped_ini_error_line"
-    report["detail_tool_version"] = "1.3"
+    report["detail_tool_version"] = "1.4"
+    if window_structure:
+        report["detail_kind"] = "wnd_lexical_structure"
+        report["control_bar_layout"] = _control_bar_layout(game_dir, structure=True)
+        report["line_detail_status"] = "Lexical structural markers and window identifiers; no source field values included."
+        return report
     if any("no free production slot" in check.get("message", "").lower()
            for check in report.get("checks", [])):
         report["detail_kind"] = "factory_command_identifiers"
@@ -179,9 +220,10 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--game-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--window-structure", action="store_true", help="Inspect WND structural markers without attempting to repair nesting")
     args = parser.parse_args(argv)
     try:
-        report = explain(args.game_dir)
+        report = explain(args.game_dir, window_structure=args.window_structure)
         data = (json.dumps(report, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
         print(data.decode("utf-8"), end="")
         if args.report is not None:
