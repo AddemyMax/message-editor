@@ -1,20 +1,24 @@
-# Ultimate Warfare — прототип 0.1.14
+# Ultimate Warfare — крупная трёхствольная «Лунма» 0.1.15
 
-[Скачать комплект](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.14-source.zip).
+[Скачать комплект](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.15-source.zip).
 
-Распакуйте отдельно, откройте папку UltimateWarfare-0.1.14 и выполните:
+[Рендер авторской модели](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/uwlongma-triple-preview.png) — Blender, не игровой снимок.
+
+Модель увеличена в 1,6 раза по каждой оси, башня расширена и усилена панелями, добавлены три отдельных ствола, обновлена окраска. Здоровье и броня прежние. Три выстрела с интервалом 180 мс, затем 6300 мс перезарядки. Сохраняется тень-декаль: пользователь подтвердил работу 0.1.14 после отказа от объёмной тени. Новая трёхствольная версия ещё требует проверки в игре.
+
+Распакуйте отдельно, откройте папку UltimateWarfare-0.1.15 и выполните:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
 ```
 
-В 0.1.13 пользователь успешно собрал BIG и запустил игру, но производство «Лунмы» завершилось вылетом. Журнал согласуется с переполнением старого буфера объёмных теней. В 0.1.14 только у нового танка объёмная тень заменена декалью; модель и остальные юниты сохраняются. Проверка исправления в игре ещё нужна.
+Новый Skirmish за обычный Китай, военный завод + центр пропаганды, Longma за 2200. Проверьте размер, выезд, проходы между зданиями и выстрелы из всех трёх стволов. При вылете сохраните свежий ReleaseCrashInfo.txt. Старые сохранения для теста не используйте.
 
-127 автоматических тестов прошли, бинарная структура модели проверена. Испытание: новый Skirmish за обычный Китай, военный завод и центр пропаганды, производство Longma за 2200. Затем движение, башня, стрельба. При вылете сохраните свежий ReleaseCrashInfo.txt.
+128 автоматических тестов прошли. W3D проверен, 7 генерируемых файлов воспроизводятся побайтно; Blender-сцена и рендер обновлены. 8220 треугольников, 17988 вершин, один LOD. Кампании/AI/сохранения/FPS новой версии не проверены.
 
-Меню завода сохраняет исходные команды и получает 15-ю кнопку с частным оверлеем стандартной панели. Кнопки производства немного уже. Новые CSF-метки добавляются с сохранением исходных записей. Оригинальные архивы и исполняемые файлы не изменяются и не входят в ZIP. Частный BIG собирается локально вне установки. Нужен Python 3.10+.
+Оригинальные файлы игры не изменяются и не входят в ZIP. Частный BIG строится локально, вне установки. Нужен Python 3.10+. Код/документация MIT, авторские ресурсы CC0-1.0; подробности в LICENSE и docs/assets.md.
 
-SHA256 ZIP: `17208547ebd724b9a08a6a105486516e44a32423254eeec12796a0b84b82ff0d`
+SHA256 ZIP: `c10db6d0ba016c12078993e6b405217730248126bb713f9ea047de2283aa3e07`
 
-Старые ZIP сохранены для воспроизводимости. uwlongma-preview.png — рендер авторской модели в Blender, не игровой снимок. Код/документация — MIT, авторские ресурсы — CC0-1.0; подробности в LICENSE и docs/assets.md.
+Старые ZIP и однопушечный рендер uwlongma-preview.png сохранены для воспроизводимости.
