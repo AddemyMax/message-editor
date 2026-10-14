@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -17,9 +18,50 @@ from uwmod.ini import IniError, parse_ini
 from uwmod.project import PROJECT, MONOLITHIC, GameSource, _atomic_write, _inside
 
 
+def _structure_context(raw_lines: list[bytes], line_number: int) -> dict:
+    """List nearby keys/module types without copying scalar field values.
+
+    This is a lexical trace, not a guessed repair or alternate INI parser.
+    """
+    from uwmod.ini import _TOP_TYPES
+    records = []
+    modules = []
+    scope = None
+    for number, raw in enumerate(raw_lines[:line_number], start=1):
+        content = raw.rstrip(b"\r\n").split(b";", 1)[0].strip(b" \t")
+        if not content:
+            continue
+        match = re.match(rb"([A-Za-z0-9_%]+)(.*)", content)
+        if match is None:
+            records.append({"line": number, "keyword": "<unrecognized>"})
+            continue
+        key = match[1].decode("ascii")
+        tail = match[2].strip(b" \t")
+        assigned = tail.startswith(b"=")
+        if assigned:
+            tail = tail[1:].strip(b" \t")
+        tokens = tail.split()
+        if key.lower() in _TOP_TYPES and not assigned and tokens:
+            scope = {"line": number, "keyword": key}
+            if re.fullmatch(rb"[A-Za-z0-9_]{1,128}", tokens[0]):
+                scope["identifier"] = tokens[0].decode("ascii")
+            records = []
+            modules = []
+        if key.lower() in ("behavior", "draw", "body", "clientupdate") and tokens:
+            module = {"line": number, "keyword": key}
+            if re.fullmatch(rb"[A-Za-z0-9_]{1,128}", tokens[0]):
+                module["module_type"] = tokens[0].decode("ascii")
+            modules.append(module)
+        records.append({"line": number, "keyword": key, "has_equals": assigned,
+                        "value_token_count": len(tokens)})
+    return {"scope_header": scope, "module_headers": modules[-16:],
+            "previous_keywords": records[-60:], "trace_kind": "lexical_metadata_not_repaired_structure"}
+
+
 def explain(game_dir: Path, *, project: Path = PROJECT) -> dict:
     report = diagnose(game_dir, project=project)
     report["detail_kind"] = "one_clipped_ini_error_line"
+    report["detail_tool_version"] = "1.1"
     details = report.get("ini_error", {})
     line_number = details.get("line")
     if not isinstance(line_number, int) or line_number < 1:
@@ -57,7 +99,8 @@ def explain(game_dir: Path, *, project: Path = PROJECT) -> dict:
         clipped = raw[:512]
         lines.append({"source_virtual_path": name, "archive_name": source.entries[name.lower()].archive_path.name,
                       "line": line_number, "ascii_escaped": clipped.decode("ascii", errors="backslashreplace"),
-                      "hex": clipped.hex(), "original_line_bytes": len(raw), "truncated": len(raw) > 512})
+                      "hex": clipped.hex(), "original_line_bytes": len(raw), "truncated": len(raw) > 512,
+                      "structure_before_error": _structure_context(raw_lines, line_number)})
     report["error_line_candidates"] = lines
     report["line_detail_status"] = (
         "Exact source provenance" if virtual and lines else
