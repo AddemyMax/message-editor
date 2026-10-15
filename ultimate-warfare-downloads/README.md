@@ -1,3 +1,35 @@
+# Ultimate Warfare0.1.35 — серый Maus по новому образцу, масштаб от Overlord
+
+По пользовательскому скриншоту прежняя модель0.1.34 оказалась слишком маленькой и не соответствовала образцу. Перестроены широкий сплошной корпус, низкая вытянутая башня с округлым лбом, длинный гладкий ствол, широкие гусеницы и16 мелких катков +2 концевых колеса на каждом борту. Новая тёмно-серая авторская окраска; модель8246 треугольников/20170 вершин,6 мешей/5 костей. Обновлены иконка, редактируемые исходники и превью. Чужая сетка/текстура не импортируются.
+
+**Размер рассчитывается по фактической normal-модели локального ChinaTankOverlord.** Учтены INI Scale, quaternion bind-позы и костные влияния. Собственный Maus также измеряется по W3D; единый Scale даёт минимум1.9× по видимой длине/ширине, сохраняя пропорции. Из-за разного отношения длины к ширине точные осевые коэффициенты могут различаться. Collision BOX и тень увеличены под корпус; пушка/точка выстрела/откат масштабируются вместе с ним. HP/броня/оружие/скорость/экономика/AI/опыт/улучшения остаются Crusader, ячейка и имя Maus прежние. Другие юниты без изменений.
+
+[Новый вид спереди](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.35-front.png) · [Сзади](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.35-rear.png). Это собственная модель в Blender до зависящего от установки Scale, не сравнительный native-скриншот.
+
+[Обновление текущей0.1.34](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.35-update.zip) · [Полный комплект0.1.35](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.35-source.zip).
+
+Закройте игру. Из текущей папки мода в PowerShell:
+
+```powershell
+$patch = Join-Path $env:TEMP "Maus-0.1.35-update.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.35-update.zip" -OutFile $patch -ErrorAction Stop
+Expand-Archive -LiteralPath $patch -DestinationPath "." -Force -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.35.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.35.big"
+}
+```
+
+Новый Skirmish: серый Maus с рядом мелких катков должен быть заметно крупнее. Сравните на ровной площадке с обычным Overlord при одинаковом увеличении камеры. Проверьте выход из завода, разворот у зданий/мосты/узкие проходы, выбор группы, стрельбу/откат/наведение, смерть, апгрейды/сохранения/AI/FPS. Native0.1.35 здесь не запускался.201 тест пройден, W3D-проверки пройдены; геометрия, Scale2 у reference, сохранение боевых полей/модулей и прежних юнитов, объединение/верификация модельных зависимостей проверены. Извлечённая0.1.34 + update и полный0.1.35 строят идентичный BIG; CLI build/validate/check-launch проходят на синтетических данных. Windows игра не запускалась.
+
+Update содержит23 авторских файла; исходные EA-ресурсы, private BIG и пользовательские отчёты не публикуются. Установка игры не меняется.
+
+SHA256 update: `78281c89aa2c7fd66b866bf2381910d56b4bcef92e7a86fb6b916f2919fa67fc`.
+SHA256 source: `bca68a950a28e92b7ab94051413e4e2b36bde0cc1f927b855867cfb19254fa0f`.
+
+## Предыдущие версии
+
 # Ultimate Warfare0.1.34 — Maus за США
 
 Новый **Maus**: авторская интерпретация Panzer VIII с длинным корпусом/закрытой ходовой, высокой башней, широкой маской и двумя стволами. Малый ствол визуальный: игровой урон не добавляется. Модель/атласы/иконка/редактируемые исходники созданы здесь, чужих ресурсов нет.
