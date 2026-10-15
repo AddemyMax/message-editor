@@ -150,6 +150,9 @@ def inspect(game_dir: Path, output: Path):
     if output.exists() or output.is_symlink():
         raise ValueError('Output directory exists; choose a new path')
     report = {'purpose':'private original-game visual references, not distributable mod artwork',
+              'tool_version':'1.1',
+              'archives':[path.name for path in source.archives],
+              'asset_counts':{ext:sum(key.endswith('.'+ext) for key in source.entries) for ext in ('w3d','tga','dds')},
               'objects':[], 'textures':[], 'errors':[]}
     images = []
     seen = set()
@@ -170,8 +173,35 @@ def inspect(game_dir: Path, output: Path):
         for model in item['models'][:1]:
             model_path = 'Art\\W3D\\'+model+'.w3d'
             try:
-                names = texture_names(source.read(model_path))
+                # Model identifiers need not correspond to a standalone file.
+                # Locate related resources, but label family matches as
+                # candidates rather than claiming exact native provenance.
+                related = [entry for key,entry in sorted(source.entries.items())
+                           if model.lower() in key.rsplit('\\',1)[-1]
+                           and key.endswith(('.w3d','.dds','.tga'))]
+                item['resource_candidates'] = [{'virtual_path':entry.name,'archive_name':entry.archive_path.name}
+                                               for entry in related[:64]]
+                exact = source.entries.get(model_path.lower())
+                model_paths = ([exact.name] if exact else
+                               [entry.name for entry in related if entry.name.lower().endswith('.w3d')][:8])
+                item['model_discovery'] = 'exact_path' if exact else 'filename_family_candidates'
+                item['model_source_paths'] = model_paths
+                names = []
+                for candidate in model_paths:
+                    try:
+                        names.extend(texture_names(source.read(candidate)))
+                    except (ValueError,KeyError,OSError) as exc:
+                        report['errors'].append({'model_source':candidate,'reason':str(exc)})
+                if not names:
+                    names = [entry.name.rsplit('\\',1)[-1] for entry in related
+                             if entry.name.lower().endswith(('.dds','.tga'))]
+                    item['texture_discovery'] = 'filename_family_candidates'
+                else:
+                    item['texture_discovery'] = 'w3d_texture_chunks'
+                names = list(dict.fromkeys(names))
                 item['texture_names'] = names
+                if not names:
+                    report['errors'].append({'model':model,'reason':'No related model/texture resources in indexed game archives. Check asset_counts and archive list; shared base-game or loose resources may be outside this source tree.'})
                 for name in names:
                     stem = name.rsplit('.',1)[0]
                     candidates = ['Art\\Textures\\'+stem+'.dds','Art\\Textures\\'+name]
@@ -191,6 +221,7 @@ def inspect(game_dir: Path, output: Path):
                     filename = f'reference-{index+1}.png'
                     images.append((filename,png(w,h,rgb)))
                     report['textures'].append({'object':unit,'model':model,'source_virtual_path':virtual_tex,
+                                               'discovery':item['texture_discovery'],
                                                'archive_name':source.entries[virtual_tex.lower()].archive_path.name,
                                                'width':w,'height':h,'preview':filename})
             except (ValueError,KeyError,OSError) as exc:
