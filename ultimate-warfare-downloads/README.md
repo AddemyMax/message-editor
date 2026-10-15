@@ -1,3 +1,33 @@
+# Ultimate Warfare 0.1.33 — визуальный обвес Бэтмобиля
+
+Новые скошенные плечи и крылья, ступенчатые бронепластины, клиновидный передний обвес, боковые воздухозаборники/юбки, гидравлика и многослойное реактивное сопло. Обновлены иконка, редактируемые исходники и два Blender-превью. Это авторская модель, не импорт киношной/чужой сетки.
+
+**4000 HP и исходная броня «Повелителя» сохранены.** Сравнение с0.1.32 подтверждает побайтно прежние игровые INI и статистики; в тестовом BIG изменены только модель, иконка и подписи A33. Точные границы, все14 костей, шесть вращающихся колёс и миниган прежние. 11884 треугольника (+15%),11 мешей. 194 теста и W3D-проверка пройдены. Нативный внешний вид/пересечения при движении/вращении, смерть, сохранения и FPS не проверены в облаке.
+
+[Спереди](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.33-front.png) · [Сзади](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.33-rear.png). Это рендеры экспортированной модели в Blender, не скриншоты SAGE.
+
+[Визуальное обновление для текущей0.1.32](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.33-design-update.zip) · [Полный комплект0.1.33](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.33-source.zip).
+
+Полностью закройте игру. В PowerShell из текущей папки мода:
+
+```powershell
+$patch = Join-Path $env:TEMP "Tumbler-0.1.33-design-update.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.33-design-update.zip" -OutFile $patch -ErrorAction Stop
+Expand-Archive -LiteralPath $patch -DestinationPath "." -Force -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.33.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.33.big"
+}
+```
+
+Новый Skirmish/новая машина: метка **Batmobile A33 [4000 HP]**. Сравните новую геометрию в движении с двух сторон. Update содержит15 авторских файлов (модель/иконка/редактируемые источники/превью, генератор, конфигурация и документация); установочные файлы игры не меняются. Старый BIG не перезаписывается. Проверены CLI build/preflight извлечённой0.1.32 с update и полного0.1.33: одинаковый BIG на авторских фикстурах.
+
+SHA256 update: `bcbd9d01aae36a70aea75657946fe79c06e25796244f27ee8ea1be9313c2f94b`.
+SHA256 source: `e8f5f74ee14559e1c2337f89b3d3ecf84336c28d7f8c6887d8b7bd5941ba3c79`.
+
+## Предыдущие версии
+
 # Ultimate Warfare 0.1.32 — 4000 HP и броня «Повелителя»
 
 По просьбе пользователя Бэтмобиль получает MaxHealth/InitialHealth=4000 и исходные коэффициенты брони всех ArmorSet локального ChinaTankOverlord. Множитель брони=1, единые5% отключены. Относительные subdual-параметры сохранены. Оружие, скорость, цена, модель, маскировка, дым и четыре ракеты не менялись. Метка: **Batmobile A32 [4000 HP]**.
