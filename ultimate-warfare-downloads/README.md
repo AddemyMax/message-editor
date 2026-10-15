@@ -1,34 +1,24 @@
-# Ultimate Warfare 0.1.23 — сохранение оружия Повелителя
+# Ultimate Warfare 0.1.24 — плотный дым Tumbler
 
-[Скачать полный комплект](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.23-source.zip). Дизайн и ресурсы остаются от 0.1.21: [спереди](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-0.1.21-preview.png), [сзади](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-0.1.21-rear-preview.png).
+[Полный комплект](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.24-source.zip). [Один файл дыма для работающей версии](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-smoke-0.1.24.ini).
 
-Исправлено предположение о свободных SECONDARY/TERTIARY у исходного танка. Все занятые слоты, их оружие, предпочтения и условия ветеранов сохраняются. Миниган выбирает общий свободный дополнительный слот и получает соответствующие AI/Draw-привязки. Если свободного слота совсем нет, сборщик сохраняет исходное оружие и выдаёт его раскладку для диагностики.
+По игровому отзыву увеличена плотность облака: 10–14 частиц каждые 2–3 кадра вместо 3–4 каждые 4–6 (средний выброс примерно в 6.9 раза чаще), клубы крупнее, выше непрозрачность, дольше живут отдельные частицы, выше вертикальный объём. Облако появляется сразу. Срок действия 8 с, радиус подавления 60, перезарядка 30 с, все параметры машины, оружие и модели сохранены.
 
-Дым теперь отдельная OCLSpecialPower: локальный таймер 30 с, временное оружие через OCL/FireWeapon, без занятия слота в WeaponSet. Прежние граната, облако на 8 с, радиус 60 и подавление только врагов сохранены. Полная оригинальная SpecialPower.ini читается из игры и дополняется в частном BIG; глобальные способности и таймеры не заменяются. Укажите ближайшую точку до 180: OCL-кнопка не ведёт машину к далёкой цели и может потратить таймер вне дальности. Нативные дальность, вылет гранаты, маскировку и перезарядку нужно проверить.
-
-Здоровье, броня, исходные пушки, скорость, физика, размер, цена, время производства, модель и Longma не менялись. Исправление DeliveryDecal из 0.1.22 включено. Один дополнительный tumbler_systems.py исправил воспроизведённую ошибку занятых слотов в извлечённой 0.1.21 с обновлённым парсером на авторском источнике; BIG собран и проверен. На настоящей установке сборку ещё нужно повторить.
-
-Для текущей 0.1.21 можно загрузить оба исправления из её корня:
+Для уже работающей 0.1.23, включая исправленную папку 0.1.21, откройте PowerShell в корне мода и выполните:
 
 ```powershell
-Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/ini-parser-0.1.22.py" -OutFile ".\tools\uwmod\ini.py" -ErrorAction Stop
-Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-systems-0.1.23.py" -OutFile ".\tools\uwmod\tumbler_systems.py" -ErrorAction Stop
-```
-
-Или распакуйте полный комплект отдельно и откройте PowerShell в UltimateWarfare-0.1.23. Сборка/запуск:
-
-```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-smoke-0.1.24.ini" -OutFile ".\content\effects\tumbler.ini" -ErrorAction Stop
 $gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-smoke-0.1.24.big"
 if ($LASTEXITCODE -eq 0) {
-    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-smoke-0.1.24.big"
 }
 ```
 
-Новый Skirmish за обычные США, завод и Центр стратегии. Проверьте исходные пушки, миниган на пехоте, дым вблизи машины, независимые таймеры двух машин и маскировку. Генералы и автоматическое производство AI не расширены. Нужны также повреждение/уничтожение, сохранение/загрузка, FPS и регрессии кампаний/AI.
+Для полного комплекта распакуйте отдельно и откройте UltimateWarfare-0.1.24; команда загрузки файла ему не нужна. Вывод под новым именем сохраняет прежний рабочий BIG. Повторная сборка в существующий выходной файл запрещена: выбирайте новое имя для -Output и соответствующее -Archive.
 
-161 тест прошёл на авторских синтетических данных. Игровая проверка новой схемы ещё не выполнена. Нужны Zero Hour 1.04, Windows и Python 3.10+; Blender для сборки не нужен. Все изображения — Blender-рендеры, не игровые снимки.
+161 тест прошёл. Извлечённый ZIP собирает и проверяет синтетический BIG; сравнение с 0.1.23 подтвердило неизменность части INI до ParticleSystem и всех 21 авторских выходных ресурсов. Пользователь подтвердил работу 0.1.23 и наличие дыма; новая плотность ещё не проверена в игре. Проверьте одну гранату, затем несколько облаков одновременно и плавность игры.
 
-SHA256 ZIP: `a3cd3513a367412f96f49c22d6553bfd0045e5131b5873c2a6580f3e1f39226e`
+Сохраняются миниган, маскировка и отдельная дымовая спецспособность 0.1.23. Генералы/автоматическое строительство AI не расширены. Нужны Windows, установленная Zero Hour 1.04, Python 3.10+. Blender для сборки не нужен. Оригинальные файлы игры не меняются, частный BIG и коммерческие игровые ресурсы не публикуются. Лицензии исходного комплекта указаны в LICENSE/docs/assets.md. Старые версии сохранены.
 
-В ZIP нет игры, её текстур/конфигураций, чужих моделей или частного BIG. Исходные игровые файлы не изменяются. Код/документация MIT, авторские геометрия/пиксели CC0-1.0 в пределах прав автора; права на фильм и названия у правообладателей. Старые файлы сохранены.
+SHA256 ZIP: `09a9aaa6497069c2fe51c897586e5a7c5680803542509336a913ead80e5c2eb6`
