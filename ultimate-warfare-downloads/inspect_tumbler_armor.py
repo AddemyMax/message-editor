@@ -15,7 +15,7 @@ COMBAT_TYPES=('EXPLOSION','CRUSH','ARMOR_PIERCING','SMALL_ARMS','GATTLING',
               'RADIATION','FLAME','LASER','SNIPER','POISON','MELEE','PARTICLE_BEAM',
               'INFANTRY_MISSILE','AURORA_BOMB','LAND_MINE','JET_MISSILES',
               'STEALTHJET_MISSILES','MOLOTOV_COCKTAIL','COMANCHE_VULCAN','MICROWAVE')
-SPECIAL_TYPES=('HEALING','UNRESISTABLE','SUBDUAL_UNRESISTABLE','STATUS','KILLPILOT')
+SPECIAL_TYPES=('HEALING','UNRESISTABLE','SUBDUAL_UNRESISTABLE','STATUS','KILL_PILOT')
 WEAPON_FIELDS={'PrimaryDamage','SecondaryDamage','PrimaryDamageRadius','SecondaryDamageRadius','DamageType',
                'DeathType','AttackRange','MinimumAttackRange','DelayBetweenShots','ClipSize',
                'ClipReloadTime','ShotsPerBarrel','ProjectileObject','RadiusDamageAffects','DamageDealtAtSelfPosition'}
@@ -50,7 +50,7 @@ def weapon_info(doc,ref,armor_sets,health):
     damage_type=scalar(weapon,'DamageType','EXPLOSION').upper()
     value=scalar(weapon,'PrimaryDamage')
     if value is not None:
-        hp_damage=damage_type not in {'HEALING','DEPLOY','SURRENDER','HACK','KILLPILOT','DISARM','HAZARD_CLEANUP','KILL_GARRISONED','STATUS','SUBDUAL_MISSILE','SUBDUAL_VEHICLE','SUBDUAL_BUILDING','SUBDUAL_UNRESISTABLE'}
+        hp_damage=damage_type not in {'HEALING','DEPLOY','SURRENDER','HACK','KILL_PILOT','DISARM','HAZARD_CLEANUP','KILL_GARRISONED','STATUS','SUBDUAL_MISSILE','SUBDUAL_VEHICLE','SUBDUAL_BUILDING','SUBDUAL_UNRESISTABLE'}
         raw=float(value)
         for armor in armor_sets:
             percent=armor['effective_percent'].get(damage_type,armor['default_percent'])
@@ -104,7 +104,7 @@ def diagnose(game_dir,archive_path):
             'native_loaded_archive_verified':False,
             'vehicle':{'id':body.name,'display_label':scalar(body,'DisplayName'),'body_type':bodies[0].value.split()[0],
                        'body':scalars(bodies[0],('MaxHealth','InitialHealth','SubdualDamageCap','SubdualDamageHealRate','SubdualDamageHealAmount')),
-                       'armor_sets':armors,'modifier_modules':modifiers,'build_armor_mapping':unit.get('armor'),
+                       'armor_sets':armors,'invalid_damage_types':sorted({kind for a in armors for kind in a['effective_percent'] if kind not in COMBAT_TYPES+SPECIAL_TYPES+('FALLING','TOPPLING','DEPLOY','SURRENDER','HACK','PENALTY','DISARM','HAZARD_CLEANUP','KILL_GARRISONED','WATER','SUBDUAL_MISSILE','SUBDUAL_VEHICLE','SUBDUAL_BUILDING')}),'modifier_modules':modifiers,'build_armor_mapping':unit.get('armor'),
                        'build_armor_policy':(unit.get('rockets') or {}).get('armor_policy'),
                        'own_weapons':[weapon_info(weapon_doc,ref,armors,health) for ref in own_refs]},
             'test_attackers':attackers,
