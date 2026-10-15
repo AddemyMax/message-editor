@@ -1,24 +1,32 @@
-# Ultimate Warfare 0.1.24 — плотный дым Tumbler
+# Ultimate Warfare 0.1.25 — Цементавр
 
-[Полный комплект](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.24-source.zip). [Один файл дыма для работающей версии](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-smoke-0.1.24.ini).
+[Скачать полный комплект 0.1.25](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.25-source.zip).
 
-По игровому отзыву увеличена плотность облака: 10–14 частиц каждые 2–3 кадра вместо 3–4 каждые 4–6 (средний выброс примерно в 6.9 раза чаще), клубы крупнее, выше непрозрачность, дольше живут отдельные частицы, выше вертикальный объём. Облако появляется сразу. Срок действия 8 с, радиус подавления 60, перезарядка 30 с, все параметры машины, оружие и модели сохранены.
+Новый юнит обычного Китая: корпус/ходовая ядерной пушки, башня и боевые параметры обычного Повелителя. Модели объединяются при сборке из установленной игры, включая соседнюю папку Generals; сохраняются штатные материалы, UV и текстуры. Готовых моделей EA в исходном ZIP нет. Здоровье, броня, оружие, AI башни, физика, локомоторы, цена и время выпуска берутся у Повелителя; габариты столкновений — от ядерной пушки. Отдельных надстроек Повелителя пока нет, обычные боевые улучшения сохранены. Нужен Центр пропаганды. Новая кнопка использует иконку Повелителя; при заполненном заводе Лунма остаётся в ячейке 15, Цементавр получает 16. Исходные команды сохраняются. На CSF имя «Цементавр», для Latin-1 STR — Cementaur.
 
-Для уже работающей 0.1.23, включая исправленную папку 0.1.21, откройте PowerShell в корне мода и выполните:
+Распакуйте комплект в отдельную папку. Если скачивание через ссылку неудобно, откройте PowerShell в папке, куда хотите распаковать новый комплект, и выполните:
 
 ```powershell
-Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-smoke-0.1.24.ini" -OutFile ".\content\effects\tumbler.ini" -ErrorAction Stop
+$kitZip = Join-Path $env:TEMP "UltimateWarfare-0.1.25-source.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.25-source.zip" -OutFile $kitZip -ErrorAction Stop
+Expand-Archive -LiteralPath $kitZip -DestinationPath "." -ErrorAction Stop
+Set-Location ".\UltimateWarfare-0.1.25"
+```
+
+Из корня новой папки UltimateWarfare-0.1.25:
+
+```powershell
 $gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-smoke-0.1.24.big"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-cementaur-0.1.25.big"
 if ($LASTEXITCODE -eq 0) {
-    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-smoke-0.1.24.big"
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-cementaur-0.1.25.big"
 }
 ```
 
-Для полного комплекта распакуйте отдельно и откройте UltimateWarfare-0.1.24; команда загрузки файла ему не нужна. Вывод под новым именем сохраняет прежний рабочий BIG. Повторная сборка в существующий выходной файл запрещена: выбирайте новое имя для -Output и соответствующее -Archive.
+Начните новый Skirmish за обычный Китай. Постройте завод и Центр пропаганды, поставьте рядом ядерную пушку, Повелителя и Цементавра. Проверьте корпус, текстуры, посадку башни, выезд, ходовую, поворот башни и стрельбу. Сборка использует неподвижную исходную позу W3D, без развёртывания. Отдельная повреждённая модель пока не собирается; эффекты/обломки смерти остаются от Повелителя. Подробный план — docs/first-run.md.
 
-161 тест прошёл. Извлечённый ZIP собирает и проверяет синтетический BIG; сравнение с 0.1.23 подтвердило неизменность части INI до ParticleSystem и всех 21 авторских выходных ресурсов. Пользователь подтвердил работу 0.1.23 и наличие дыма; новая плотность ещё не проверена в игре. Проверьте одну гранату, затем несколько облаков одновременно и плавность игры.
+169 автоматических тестов пройдено. Проверены rigid/skin-геометрия, отдельная иерархия, точки выстрела, колесные привязки, сохранение параметров, ячейки 15/16 и обнаружение изменения исходных моделей. Извлечённый ZIP собирает и проверяет синтетический BIG. Сравнение с 0.1.24 на одинаковых входных данных: прежние модели, текстуры и определения Лунмы/Tumbler байт-в-байт сохранены; старые выходные файлы меняются только добавлением команд и подписей. Реальных моделей игры и Windows Zero Hour в облаке нет: внешний вид, исходная поза и игровой запуск Цементавра ещё не проверены.
 
-Сохраняются миниган, маскировка и отдельная дымовая спецспособность 0.1.23. Генералы/автоматическое строительство AI не расширены. Нужны Windows, установленная Zero Hour 1.04, Python 3.10+. Blender для сборки не нужен. Оригинальные файлы игры не меняются, частный BIG и коммерческие игровые ресурсы не публикуются. Лицензии исходного комплекта указаны в LICENSE/docs/assets.md. Старые версии сохранены.
+Нужны Windows, установленная Zero Hour 1.04 и Python 3.10+. Blender не требуется. Файлы установки не изменяются. BIG и manifest не перезаписываются; для повторной сборки задайте другое имя -Output и тот же путь -Archive. Старые версии сохранены. Коммерческие ресурсы и частный BIG не публикуются.
 
-SHA256 ZIP: `09a9aaa6497069c2fe51c897586e5a7c5680803542509336a913ead80e5c2eb6`
+SHA256 ZIP: `bc9e1d7b3b03d9ff57410fdb2545063b47c2a5ce1143806d22d726e8a72bf899`
