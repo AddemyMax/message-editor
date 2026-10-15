@@ -1,3 +1,31 @@
+# Ultimate Warfare0.1.36 — только исправление масштаба Maus
+
+Пользователь сообщил, что0.1.35 огромен и не похож на Maus Blitzkrieg II. Автоматическое увеличение по Overlord отключено. Установлен фиксированный Scale2 авторского W3D, примерно42.33×20.8 по горизонтальным габаритам до общих настроек движка. Collision/decal shadow согласованы с ним. Это не2×Overlord, а абсолютный коэффициент собственной модели. Боевые параметры Crusader, старые юниты и текущий арт0.1.35 сохранены. Native-масштаб ещё не проверен.
+
+**Новый дизайн Blitzkrieg II не перенесён.** Предоставленная страница https://www.moddb.com/mods/blitzkrieg-ii/images/maus/ возвращает из среды proxy tunnel403. Изображение и лицензия не просмотрены. Для воссоздания нужен доступный скриншот; для буквального переноса — W3D/текстуры и совместимые условия/разрешение. Чужие файлы не добавлялись.
+
+[Небольшое исправление для0.1.35](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.36-scale-fix.zip) · [Полный комплект0.1.36 с прежним артом](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.36-source.zip).
+
+Закройте игру. Из текущей папки мода в PowerShell:
+
+```powershell
+$patch = Join-Path $env:TEMP "Maus-0.1.36-scale-fix.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.36-scale-fix.zip" -OutFile $patch -ErrorAction Stop
+Expand-Archive -LiteralPath $patch -DestinationPath "." -Force -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.36.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.36.big"
+}
+```
+
+Начните новый Skirmish и проверьте размер, выезд из завода, движение/стрельбу.202 теста и W3D-проверки прошли. Регрессия проверяет, что Overlord Scale100 не изменяет размер Maus. Извлечённая0.1.35 + fix и полный0.1.36 строят одинаковый BIG; CLI build/check-launch проходят на синтетических данных. Windows-игра не запускалась. Исправление содержит11 авторских файлов, без EA-ресурсов/частных BIG/отчётов.
+
+SHA256 fix: `bf40758df013c68af3e985aadebfb5fde0ce47b84abc83597a0110e76cfbd798`.
+SHA256 source: `a5b98beab8e5c47d1c0745e15391a7c7f217d70fc50143ff227936f0815adc3d`.
+
+## Предыдущие версии
+
 # Ultimate Warfare0.1.35 — серый Maus по новому образцу, масштаб от Overlord
 
 По пользовательскому скриншоту прежняя модель0.1.34 оказалась слишком маленькой и не соответствовала образцу. Перестроены широкий сплошной корпус, низкая вытянутая башня с округлым лбом, длинный гладкий ствол, широкие гусеницы и16 мелких катков +2 концевых колеса на каждом борту. Новая тёмно-серая авторская окраска; модель8246 треугольников/20170 вершин,6 мешей/5 костей. Обновлены иконка, редактируемые исходники и превью. Чужая сетка/текстура не импортируются.
