@@ -1,3 +1,33 @@
+# Ultimate Warfare0.1.34 — Maus за США
+
+Новый **Maus**: авторская интерпретация Panzer VIII с длинным корпусом/закрытой ходовой, высокой башней, широкой маской и двумя стволами. Малый ствол визуальный: игровой урон не добавляется. Модель/атласы/иконка/редактируемые исходники созданы здесь, чужих ресурсов нет.
+
+**Все не-визуальные параметры взяты из локального AmericaTankCrusader.** Body/здоровье, ArmorSet/WeaponSet/опыт, AI/скорость/поворот/геометрия, цена/время, prerequisites, CommandSet и улучшения сохранены. Новый stock_reskin меняет идентификатор, Draw, название/портрет и decal-тень. Maus доступен в обычном AmericaWarFactory с исходными требованиями Crusader; дополнительный StrategyCenter не добавлен. Кнопка занимает свободный1–12 либо15/16. При полном заводе Tumbler15/Maus16, все оригинальные команды сохранены. Старый Tumbler по-прежнему A33 [4000 HP], китайские юниты прежние.
+
+[Превью спереди](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.34-front.png) · [Сзади](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.34-rear.png). Это фактическая модель в Blender, не игровой кадр.
+
+[Обновление для текущей0.1.33](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.34-update.zip) · [Полный комплект0.1.34](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.34-source.zip).
+
+Полностью закройте игру. В PowerShell из текущей папки мода:
+
+```powershell
+$patch = Join-Path $env:TEMP "Maus-0.1.34-update.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Maus-0.1.34-update.zip" -OutFile $patch -ErrorAction Stop
+Expand-Archive -LiteralPath $patch -DestinationPath "." -Force -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.34.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.34.big"
+}
+```
+
+В новом Skirmish за обычные США выпустите Maus и Crusader, сравните их характеристики/улучшения. Проверьте выпуск, движение/поворот/гусеницы, наведение/откат/попадание, смерть, дроны/апгрейды, сохранение/загрузку, AI/кампании и FPS. Native-проверки не выполнялись в облаке.200 автоматических тестов пройдены; проверены точное сохранение не-визуальных полей/модулей, варианты исходных параметров, полные ячейки15/16/отказ при переполнении, прежние юниты и зависимости модели. W3D/геометрия/UV/mapper проверены;4108 треугольников,6 мешей,5 костей. Сборка извлечённой0.1.33 + update и полного0.1.34 даёт одинаковый BIG на авторских фикстурах. Игра не перезаписывается; ресурсы EA и частные BIG не публикуются.
+
+SHA256 update: `d06e6a26d02d5b0f65bea36c16bb5a6ed67c6b0cd533bd5ece3b9cda4e062234`.
+SHA256 source: `1734e33a24aa2a37c2b5f3ef14b1a59ddefae7f79e38c2c35cadc771bb04d02e`.
+
+## Предыдущие версии
+
 # Ultimate Warfare 0.1.33 — визуальный обвес Бэтмобиля
 
 Новые скошенные плечи и крылья, ступенчатые бронепластины, клиновидный передний обвес, боковые воздухозаборники/юбки, гидравлика и многослойное реактивное сопло. Обновлены иконка, редактируемые исходники и два Blender-превью. Это авторская модель, не импорт киношной/чужой сетки.
