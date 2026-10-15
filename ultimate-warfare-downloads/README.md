@@ -1,3 +1,17 @@
+## Диагностика текстур и деталей Цементавра
+
+После игрового фото IMG_2090 проблема внешнего вида ещё не исправлена: нужны исходные привязки и материалы штатных моделей. Скрипт ниже сохраняет метаданные корпуса, башни и уже собранного BIG: имена деталей, кости, число выбранных треугольников, названия текстур, контрольные суммы UV-каналов и материалов. Модели, текстуры и массивы вершин не выгружаются, игра и BIG не меняются. Проверено на извлечённой 0.1.25 с исправленным именем корпуса; 171 автоматический тест прошёл.
+
+Из текущей папки мода:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/inspect_cementaur.py" -OutFile ".\tools\inspect_cementaur.py" -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+py -3 .\tools\inspect_cementaur.py --game-dir $gameDir --archive ".\dist\UltimateWarfare.big" --report ".\dist\cementaur-visual-details.json"
+```
+
+Результат: `dist/cementaur-visual-details.json`. Если BIG собирался под другим именем, укажите его в `--archive`. Скрипт отказывается перезаписывать существующий отчёт; повторный запуск требует нового имени `--report`.
+
 # Ultimate Warfare 0.1.26 — исправление имени ядерной пушки
 
 В 0.1.25 было ошибочно указано `ChinaVehicleNukeCannon`. Правильное имя — `ChinaVehicleNukeLauncher`; прежний пользовательский отчёт меню содержит соответствующую заводскую команду. Переустанавливать игру не нужно. Параметры и сборка модели не менялись.
