@@ -1,3 +1,24 @@
+# Ultimate Warfare 0.1.29 — исправление необязательного DEFAULT брони
+
+В 0.1.28 сборщик ошибочно требовал DEFAULT в каждой исходной таблице брони. В SAGE это необязательное поле: ArmorTemplate начинает со 100% для всех типов. Исправление следует этому правилу, учитывает порядок DEFAULT/повторных переопределений и сохраняет специальные воздействия/лечение при усилении боевой брони втрое. Ракетная установка, модели и другие параметры не менялись. Переустановка игры не требуется.
+
+[Полный комплект 0.1.29](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.29-source.zip). Для текущей папки 0.1.28 достаточно одного файла:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-rockets-0.1.29.py" -OutFile ".\tools\uwmod\tumbler_rockets.py" -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.29.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.29.big"
+}
+```
+
+183 теста пройдены, включая отсутствие DEFAULT, пустую броню и порядок сбросов/переопределений. На извлечённой 0.1.28 воспроизведена исходная ошибка, затем замена единственного модуля позволила собрать и проверить синтетический BIG. Полный ZIP 0.1.29 также собирается на этих входных данных. Оригинальные таблицы брони остаются неизменными; усиление применяется только к частным таблицам Tumbler. Native-сборка/игровой запуск на установке пользователя после исправления ещё не проверены.
+
+SHA256 ZIP: `cf15759f0ab78a3a104a8ba1830ac733b3fa95d5027a0c2dba906a752104ba0d`.
+
+## Предыдущее обновление
+
 # Ultimate Warfare 0.1.28 — Бэтмобиль: броня ×3 и кормовые ракеты
 
 [Скачать полный комплект 0.1.28](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.28-source.zip). [Рендер авторской модели сзади](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-rockets-0.1.28-rear.png) — Blender, не снимок SAGE.
