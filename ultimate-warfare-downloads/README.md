@@ -1,3 +1,30 @@
+# Ultimate Warfare 0.1.32 — 4000 HP и броня «Повелителя»
+
+По просьбе пользователя Бэтмобиль получает MaxHealth/InitialHealth=4000 и исходные коэффициенты брони всех ArmorSet локального ChinaTankOverlord. Множитель брони=1, единые5% отключены. Относительные subdual-параметры сохранены. Оружие, скорость, цена, модель, маскировка, дым и четыре ракеты не менялись. Метка: **Batmobile A32 [4000 HP]**.
+
+[Обновление текущей папки 0.1.28–31](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.32-update.zip).
+[Полный комплект 0.1.32](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.32-source.zip).
+
+Полностью закройте игру. В PowerShell из текущей папки мода:
+
+```powershell
+$patch = Join-Path $env:TEMP "Tumbler-0.1.32-update.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.32-update.zip" -OutFile $patch -ErrorAction Stop
+Expand-Archive -LiteralPath $patch -DestinationPath "." -Force -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.32.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.32.big"
+}
+```
+
+Начните новый Skirmish, постройте новую машину и проверьте метку A32 [4000 HP]. Установочные файлы игры не меняются. 194 теста и W3D-проверка прошли; сравнение всех38 эффективных коэффициентов включает обычную/дополнительную ArmorSet и исходные DEFAULT/повторы. Извлечённая0.1.28 + update и полный0.1.32 собирают одинаковый тестовый BIG. Нативная игра/PowerShell здесь не запускались.
+
+SHA256 update: `9672455c99162451631e9df4ee7d46ca8d2697340a4af13146d71fc8997bb7bd`.
+SHA256 source: `23c37e792e1d4330af8440e9cfe7bd916c392a99f3a6a0782a104c0b232b0f3f`.
+
+## Предыдущие версии
+
 # Ultimate Warfare 0.1.31 — исправленная броня, 5000 HP и метка загрузки
 
 В частной таблице брони найдено неверное имя KILLPILOT; native DamageTypeFlags принимает KILL_PILOT. Ошибка генератора исправлена, все 38 типов сверены с опубликованным кодом SAGE; build/preflight отклоняют неизвестные имена. Предыдущий отчёт подтверждал проценты в BIG, но не валидность имён или загруженный Windows-процесс. Связь найденной ошибки с конкретной игровой быстрой гибелью ещё требует native-проверки.
