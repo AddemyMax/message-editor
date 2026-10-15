@@ -143,17 +143,66 @@ def png(w,h,rgb):
             +chunk(b'IDAT',zlib.compress(scan))+chunk(b'IEND',b''))
 
 
-def inspect(game_dir: Path, output: Path):
+def _shared_roots(game_dir: Path, explicit: Path | None):
+    """Bounded discovery beside the selected installation, not a drive scan."""
+    if explicit is not None:
+        return [explicit.resolve()]
+    parent = game_dir.resolve().parent
+    candidates = [parent]
+    if parent != parent.parent:
+        candidates += [path for path in parent.iterdir()
+                       if path.is_dir() and not path.is_symlink() and 'general' in path.name.lower()]
+    result = []
+    for path in candidates:
+        if path == game_dir.resolve() or path in result:
+            continue
+        # Only index a sibling with base-game art archives at its root.
+        names = {entry.name.lower() for entry in path.iterdir() if entry.is_file()}
+        if names & {'textures.big','w3d.big','texturesenglish.big'} or (path/'Art/Textures').is_dir():
+            result.append(path)
+    return result
+
+
+def inspect(game_dir: Path, output: Path, base_game_dir: Path | None = None):
     source = GameSource(game_dir)
     if _inside(output, source.game_dir):
         raise ValueError('Output must stay outside the game installation')
     if output.exists() or output.is_symlink():
         raise ValueError('Output directory exists; choose a new path')
     report = {'purpose':'private original-game visual references, not distributable mod artwork',
-              'tool_version':'1.1',
+              'tool_version':'1.2',
               'archives':[path.name for path in source.archives],
               'asset_counts':{ext:sum(key.endswith('.'+ext) for key in source.entries) for ext in ('w3d','tga','dds')},
               'objects':[], 'textures':[], 'errors':[]}
+    roots = [source.game_dir] + _shared_roots(source.game_dir,base_game_dir)
+    if any(_inside(output,root) for root in roots):
+        raise ValueError('Output must stay outside all game source folders')
+    sources = [source]
+    report['shared_sources'] = []
+    for root in roots[1:]:
+        try:
+            extra = GameSource(root)
+            sources.append(extra)
+            report['shared_sources'].append({'folder_name':root.name,'archives':[path.name for path in extra.archives]})
+        except (ValueError,OSError):
+            report['shared_sources'].append({'folder_name':root.name,'archive_status':'not indexed; loose texture lookup remains available'})
+
+    def resolve_texture(candidates):
+        # Check loose copies first, matching the engine's loose-file masking.
+        for root in roots:
+            for virtual in candidates:
+                path = root.joinpath(*virtual.split('\\'))
+                if path.is_file() and _inside(path,root) and not path.is_symlink():
+                    if path.stat().st_size > 32*1024*1024:
+                        raise ValueError('Loose reference texture exceeds size limit')
+                    return virtual,path.read_bytes(),{'source_kind':'loose_file','folder_name':root.name}
+        for selected in sources:
+            for virtual in candidates:
+                entry = selected.entries.get(virtual.lower())
+                if entry is not None:
+                    return entry.name,selected.read(entry.name),{'source_kind':'archive','archive_name':entry.archive_path.name,
+                                                              'folder_name':selected.game_dir.name}
+        return None
     images = []
     seen = set()
     for unit in ('ChinaTankBattleMaster','ChinaTankOverlord'):
@@ -202,14 +251,19 @@ def inspect(game_dir: Path, output: Path):
                 item['texture_names'] = names
                 if not names:
                     report['errors'].append({'model':model,'reason':'No related model/texture resources in indexed game archives. Check asset_counts and archive list; shared base-game or loose resources may be outside this source tree.'})
-                for name in names:
+                useful = [name for name in names if not name.lower().startswith(('housecolor','extnk','pmredlight'))]
+                useful.sort(key=lambda name: (('_d' in name.lower()), not ('treads' in name.lower()), name.lower()))
+                for name in useful:
                     stem = name.rsplit('.',1)[0]
                     candidates = ['Art\\Textures\\'+stem+'.dds','Art\\Textures\\'+name]
-                    virtual_tex = next((path for path in candidates if path.lower() in source.entries),None)
-                    if virtual_tex is None or virtual_tex.lower() in seen:
+                    found = resolve_texture(candidates)
+                    if found is None:
+                        report.setdefault('missing_textures',[]).append(name)
+                        continue
+                    virtual_tex,payload,origin = found
+                    if virtual_tex.lower() in seen:
                         continue
                     seen.add(virtual_tex.lower())
-                    payload = source.read(virtual_tex)
                     try:
                         w,h,rgb = decode_dds(payload) if payload[:4]==b'DDS ' else decode_tga(payload)
                     except ValueError as exc:
@@ -222,7 +276,7 @@ def inspect(game_dir: Path, output: Path):
                     images.append((filename,png(w,h,rgb)))
                     report['textures'].append({'object':unit,'model':model,'source_virtual_path':virtual_tex,
                                                'discovery':item['texture_discovery'],
-                                               'archive_name':source.entries[virtual_tex.lower()].archive_path.name,
+                                               **origin,
                                                'width':w,'height':h,'preview':filename})
             except (ValueError,KeyError,OSError) as exc:
                 report['errors'].append({'model':model,'reason':str(exc)})
@@ -236,9 +290,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--game-dir',type=Path,required=True)
     parser.add_argument('--output',type=Path,default=PROJECT/'dist/stock-visual-reference')
+    parser.add_argument('--base-game-dir',type=Path,help='Optional explicit original Generals folder for shared artwork')
     args = parser.parse_args()
     try:
-        report = inspect(args.game_dir,args.output)
+        report = inspect(args.game_dir,args.output,args.base_game_dir)
         print(json.dumps(report,ensure_ascii=False,indent=2))
         print('Private reference folder: '+str(args.output.resolve()))
         return 0 if report['textures'] else 1
