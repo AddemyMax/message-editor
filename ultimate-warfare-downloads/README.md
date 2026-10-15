@@ -1,3 +1,26 @@
+# Ultimate Warfare 0.1.26 — исправление имени ядерной пушки
+
+В 0.1.25 было ошибочно указано `ChinaVehicleNukeCannon`. Правильное имя — `ChinaVehicleNukeLauncher`; прежний пользовательский отчёт меню содержит соответствующую заводскую команду. Переустанавливать игру не нужно. Параметры и сборка модели не менялись.
+
+[Полный исправленный комплект 0.1.26](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.26-source.zip).
+
+Для существующей папки 0.1.25 достаточно выполнить из её корня:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/cementaur-0.1.26.json" -OutFile ".\content\units\cementaur.json" -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir
+}
+```
+
+169 тестов и проверка авторских W3D пройдены. На извлечённой 0.1.25 воспроизведена ошибка отсутствующего объекта, затем замена единственного JSON позволила собрать и проверить синтетический BIG. Исходный ZIP не содержит ресурсов EA. Native-сборка на установке пользователя после исправления ещё не проверена.
+
+SHA256 полного ZIP 0.1.26: `f4bda3f022e9548ec46147fef614071daaab7e364256b5bbfce5bbe6de39fc52`.
+
+## Предыдущая версия и подробности модели
+
 # Ultimate Warfare 0.1.25 — Цементавр
 
 [Скачать полный комплект 0.1.25](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.25-source.zip).

@@ -1,0 +1,26 @@
+{
+  "id": "ChinaTankUWCementaur",
+  "profile": "stock_kitbash",
+  "source_object": "ChinaTankOverlord",
+  "chassis_object": "ChinaVehicleNukeLauncher",
+  "production_object": "ChinaWarFactory",
+  "prerequisite": "ChinaPropagandaCenter",
+  "button": "Command_ConstructUWCementaur",
+  "command_set": "UWCementaurCommandSet",
+  "model": "UWCEMENTAUR",
+  "image": "UWCementaurCameo",
+  "asset_files": [],
+  "display_label": "OBJECT:UWCementaur",
+  "button_label": "CONTROLBAR:ConstructUWCementaur",
+  "tooltip_label": "CONTROLBAR:TooltipUWCementaur",
+  "labels": {
+    "OBJECT:UWCementaur": "Цементавр",
+    "CONTROLBAR:ConstructUWCementaur": "Построить Цементавра",
+    "CONTROLBAR:TooltipUWCementaur": "Корпус ядерной пушки, башня и боевые характеристики Повелителя. Требуется Центр пропаганды."
+  },
+  "labels_latin": {
+    "OBJECT:UWCementaur": "Cementaur",
+    "CONTROLBAR:ConstructUWCementaur": "Build Cementaur",
+    "CONTROLBAR:TooltipUWCementaur": "Nuclear Cannon chassis, Overlord turret and combat statistics. Requires Propaganda Center."
+  }
+}
