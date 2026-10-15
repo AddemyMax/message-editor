@@ -1,0 +1,47 @@
+{
+  "id": "AmericaVehicleUWTumbler",
+  "profile": "stock_reference",
+  "source_object": "ChinaTankOverlord",
+  "production_object": "AmericaWarFactory",
+  "prerequisite": "AmericaStrategyCenter",
+  "button": "Command_ConstructUWTumbler",
+  "command_set": "UWTumblerCommandSet",
+  "model": "UWTUMBLER",
+  "image": "UWTumblerCameo",
+  "asset_files": [
+    "uwtumbler.w3d",
+    "uwtumbler.tga",
+    "uwtbcameo.tga",
+    "uwsmkgren.w3d",
+    "uwsmoke.tga",
+    "uwsmkbtn.tga",
+    "uwtbrack.w3d"
+  ],
+  "cameo_file": "uwtbcameo.tga",
+  "geometry": {
+    "major_radius": 12.4,
+    "minor_radius": 7.5,
+    "height": 11.9
+  },
+  "labels": {
+    "OBJECT:UWTumbler": "Batmobile Tumbler",
+    "CONTROLBAR:ConstructUWTumbler": "Build Batmobile",
+    "CONTROLBAR:TooltipUWTumbler": "Stealth Tumbler. Uniform heavy armor (5% combat damage), Humvee speed, minigun, smoke and four long-range rockets.",
+    "CONTROLBAR:UWTumblerSmoke": "Smoke grenade",
+    "CONTROLBAR:TooltipUWTumblerSmoke": "Launch smoke: 8 seconds, radius 60. Suppresses enemy weapons while inside. Reload: 30 seconds."
+  },
+  "display_label": "OBJECT:UWTumbler",
+  "button_label": "CONTROLBAR:ConstructUWTumbler",
+  "tooltip_label": "CONTROLBAR:TooltipUWTumbler",
+  "speed_reference_object": "AmericaVehicleHumvee",
+  "size_reference_object": "AmericaTankPaladin",
+  "size_reference_ratio": 1.1,
+  "tumbler_systems": true,
+  "armor_strength_multiplier": 3,
+  "tumbler_rockets": {
+    "attack_range": 360,
+    "reload_ms": 12000,
+    "delay_ms": 250
+  },
+  "armor_damage_percent": 5
+}

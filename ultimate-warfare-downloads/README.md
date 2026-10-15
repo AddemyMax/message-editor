@@ -1,3 +1,27 @@
+# Ultimate Warfare 0.1.30 — единая тяжёлая броня Бэтмобиля
+
+Вместо умножения исходных сопротивлений назначается единый коэффициент боевого урона 5% для DEFAULT и всех явно заданных боевых типов во всех ArmorSet Tumbler. Это 95% снижение входящего обычного боевого урона, включая SMALL_ARMS/GATTLING, снаряды, ракеты, взрывы, огонь и другие типы. Различия исходного урона/скорострельности оружия сохраняются; одинаков коэффициент защиты. Здоровье, ракеты, миниган, основные пушки, дым, скорость и цена прежние. Лечение/STATUS и служебные типы сохраняют исходные коэффициенты; прямой скриптовый урон, обходящий броню движка, по-прежнему её обходит. Остальные юниты не правятся.
+
+[Полный комплект 0.1.30](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.30-source.zip). Для вашей текущей 0.1.28/29 из корня мода:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-rockets-0.1.30.py" -OutFile ".\tools\uwmod\tumbler_rockets.py" -ErrorAction Stop
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/tumbler-armor-0.1.30.json" -OutFile ".\content\units\tumbler.json" -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.30.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.30.big"
+}
+```
+
+После запуска нового BIG начните новый Skirmish и сравните попадания пулемёта Humvee, китайского Gattling, танковых пушек и ракет. Не переносите старые сохранения для первого сравнения. Модель и ракеты прежние.
+
+186 автоматических тестов пройдены, включая исходную уязвимость SMALL_ARMS=300%/GATTLING=180%, нормализуемую до 5%, все наборы брони и сохранение здоровья. На извлечённой 0.1.28 замена только двух файлов собирает корректный синтетический BIG без DEFAULT в исходной броне. Полный 0.1.30 ZIP даёт тот же BIG. Игровой результат новой брони ещё не проверен в Windows. Режим множителя поддерживается для старых манифестов без armor_damage_percent.
+
+SHA256 ZIP: `e986dd5ea1dce5be8b4854173c01ec9e52123e1fb947f9c442c5411790902c35`.
+
+## Предыдущие обновления
+
 # Ultimate Warfare 0.1.29 — исправление необязательного DEFAULT брони
 
 В 0.1.28 сборщик ошибочно требовал DEFAULT в каждой исходной таблице брони. В SAGE это необязательное поле: ArmorTemplate начинает со 100% для всех типов. Исправление следует этому правилу, учитывает порядок DEFAULT/повторных переопределений и сохраняет специальные воздействия/лечение при усилении боевой брони втрое. Ракетная установка, модели и другие параметры не менялись. Переустановка игры не требуется.
