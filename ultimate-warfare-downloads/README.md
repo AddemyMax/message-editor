@@ -1,3 +1,36 @@
+# Ultimate Warfare 0.1.31 — исправленная броня, 5000 HP и метка загрузки
+
+В частной таблице брони найдено неверное имя KILLPILOT; native DamageTypeFlags принимает KILL_PILOT. Ошибка генератора исправлена, все 38 типов сверены с опубликованным кодом SAGE; build/preflight отклоняют неизвестные имена. Предыдущий отчёт подтверждал проценты в BIG, но не валидность имён или загруженный Windows-процесс. Связь найденной ошибки с конкретной игровой быстрой гибелью ещё требует native-проверки.
+
+Бэтмобиль получает MaxHealth/InitialHealth=5000, единую броню 5% обычного боевого урона и имя **Batmobile A31 [5000 HP]**. Остальные характеристики, оружие, ракеты, дым и модель прежние. Subdual cap и recovery amount масштабируются вместе с HP, чтобы исходный лимит не делал EMP недостижимым. Launcher не запускает новую игру поверх уже открытого Generals/game.dat и не завершает процессы сам. Для проверки нужна новая схватка/новая машина, без старого сохранения.
+
+[Небольшой ZIP обновления для 0.1.28–30](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.31-update.zip). [Полный комплект 0.1.31](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.31-source.zip).
+
+Полностью закройте игру. Из текущей папки мода выполните:
+
+```powershell
+$patch = Join-Path $env:TEMP "Tumbler-0.1.31-update.zip"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/Tumbler-0.1.31-update.zip" -OutFile $patch -ErrorAction Stop
+Expand-Archive -LiteralPath $patch -DestinationPath "." -Force -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-0.1.31.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-0.1.31.big"
+}
+```
+
+Обновление заменяет шесть авторских файлов мода: catalog, манифест Tumbler, rocket/armor модуль, reference_vehicle, launcher и диагностический скрипт. Файлы установки игры не меняются, старые BIG сохраняются. Полный комплект уже включает исправления; ему загрузка update.zip не нужна.
+
+В новом Skirmish выпустите машину за обычные США. На выделенной машине должно быть **Batmobile A31 [5000 HP]**. Если надписи нет, сначала проверьте запуск нового BIG/сохранение. При наличии метки сравните попадания одного Humvee/Gattling и танковой пушки. Это поможет проверить реальную загруженную версию, а не только содержимое файла на диске.
+
+193 автоматических теста прошли. Проверены канонические типы, отказ от KILLPILOT при build/preflight, HP/initialHP/report=5000, коэффициенты5%, относительные subdual-параметры и сохранение старого оружия/моделей. Извлечённая 0.1.28 + update.zip собирает тот же тестовый BIG, что полный 0.1.31. Native-стрельба/смерть и новый PowerShell guard здесь не выполнялись: Windows/pwsh недоступны. Пользовательские отчёты и ресурсы EA не публикуются.
+
+SHA256 update ZIP: `e49d1f62d1b9ced849d819c0f009345a1a5c16206dd4db8198200b816a13a31e`.
+
+SHA256 полного ZIP: `50da1dd4bf6224e157144e3ac904f3b67f0f05bc03afa8f3fb93fa36aa886236`.
+
+## Предыдущие обновления
+
 ## Проверка фактической брони Бэтмобиля
 
 После отзыва об отсутствии ощутимого усиления доступен read-only инструмент для проверки уже собранного BIG. Он показывает фактическое здоровье, все ArmorSet/эффективные проценты, checksum архива и сборочного manifest, оружие машины и исходных Humvee/Gattling/танков, базовую оценку урона за попадание. Он не подтверждает, какой архив уже загружен в Windows-процесс, и не учитывает бонусы/несколько атакующих в оценках. Сами игровые INI/модели не выгружаются, игра и BIG не меняются.
