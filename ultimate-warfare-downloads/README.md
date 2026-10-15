@@ -1,3 +1,26 @@
+# Ultimate Warfare 0.1.27 — убрать лишнее ядерное орудие Цементавра
+
+Пользовательский отчёт подтвердил: материалы и UV исходных моделей сохранены, но транспортное ядерное орудие состоит из дополнительных веток вне `TURRET01`. В сборку попадали `TURRETFRONT`, `TURRETBACK`, `GUNBARREL`, `LIFTERS`, `ELEVATIONBARREL`; они накладывались на установленную башню Повелителя. Исправление удаляет обе дополнительные ветки оружия, сохраняя корпус, ходовую, опоры и башню Повелителя с исходными материалами/UV. Характеристики и остальные юниты не меняются.
+
+[Полный комплект 0.1.27](https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/UltimateWarfare-0.1.27-source.zip). Для существующей папки 0.1.25 с уже исправленным именем ядерной пушки или 0.1.26 замените только файл сборщика:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/AddemyMax/message-editor/uw-mod-download/ultimate-warfare-downloads/kitbash-0.1.27.py" -OutFile ".\tools\uwmod\kitbash.py" -ErrorAction Stop
+$gameDir = "C:\Program Files (x86)\R.G. Mechanics\Command and Conquer - Generals\Command and Conquer Generals Zero Hour"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-Mod.ps1 -GameDir $gameDir -Output ".\dist\UltimateWarfare-cementaur-0.1.27.big"
+if ($LASTEXITCODE -eq 0) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Launch-Mod.ps1 -GameDir $gameDir -Archive ".\dist\UltimateWarfare-cementaur-0.1.27.big"
+}
+```
+
+Новый путь вывода сохраняет предыдущий BIG. Начните новый Skirmish за обычный Китай; проверьте отсутствие старого ствола и кожуха ядерной пушки, положение единственной башни Повелителя, её вращение, вспышки и стрельбу. Кабина, гусеницы и опоры остаются. Результат исправления ещё не проверен в Windows.
+
+174 автоматических теста пройдены; авторские W3D проверены. На извлечённой 0.1.26 воспроизведено попадание транспортного орудия в модель. Замена единственного kitbash.py удаляет эти части и меняет в тестовом BIG только uwcementaur.w3d; все INI, параметры, старые модели, текстуры и эффекты побайтно сохранены. Полный ZIP 0.1.27 собирает тот же исправленный W3D на авторских тестовых ресурсах. Коммерческие модели и пользовательский диагностический отчёт не публикуются.
+
+SHA256 полного ZIP: `4d838c87d3cc5ec966e5c8aef40b36b864a61d0f5a14e006685ad92fd89c0d67`.
+
+## История диагностики
+
 ## Диагностика текстур и деталей Цементавра
 
 После игрового фото IMG_2090 проблема внешнего вида ещё не исправлена: нужны исходные привязки и материалы штатных моделей. Скрипт ниже сохраняет метаданные корпуса, башни и уже собранного BIG: имена деталей, кости, число выбранных треугольников, названия текстур, контрольные суммы UV-каналов и материалов. Модели, текстуры и массивы вершин не выгружаются, игра и BIG не меняются. Проверено на извлечённой 0.1.25 с исправленным именем корпуса; 171 автоматический тест прошёл.
